@@ -1,30 +1,24 @@
-# prd/Dockerfile — for CI/CD production builds
+# prd/Dockerfile — the artifact CI publishes and the platform deploys
+#
+# Layout-agnostic on purpose: this overlay retrofits an EXISTING application, so it copies the whole
+# repo and runs the application's OWN build command rather than assuming a module name, a crate, a
+# src/ layout or an output path. `build_command` and `runtime_artifact` are answers; their defaults
+# match what this language's p6m service archetype produces, so a greenfield-shaped repo needs
+# neither.
 
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS builder
 WORKDIR /src
-
 COPY . .
-RUN dotnet restore "{{ ProjectName }}/{{ ProjectName }}.csproj" && \
-    dotnet publish "{{ ProjectName }}/{{ ProjectName }}.csproj" \
-        -c Release \
-        -o /app/publish \
-        --no-restore
+RUN {{ build_command }}
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
-
-# Install CA certificates for TLS connections to external services
 USER root
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && \
     rm -rf /var/lib/apt/lists/*
-
-# Run as non-root user (built-in 'app' user in aspnet image, uid 1654)
 USER app
-
 COPY --from=builder --chown=app:app /app/publish .
-
 ENV ASPNETCORE_URLS=""
 EXPOSE {{ service_port }}
 EXPOSE {{ management_port }}
-
-ENTRYPOINT ["dotnet", "{{ ProjectName }}.dll"]
+ENTRYPOINT ["dotnet", "{{ runtime_artifact }}"]

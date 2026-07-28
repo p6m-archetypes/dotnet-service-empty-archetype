@@ -60,6 +60,21 @@ require("ports").prompt(context, {
     },
 })
 
+-- How to build and run the EXISTING application. These two are the only facts about the
+-- application's internals the overlay needs, and it cannot guess them: a retrofit target may be a
+-- single crate or a workspace, a flat module or a multi-module build, src/ layout or not. Defaults
+-- match what this language's own p6m service archetype produces, so a greenfield-shaped repo needs
+-- no answer; anything else overrides one line instead of rewriting a Dockerfile.
+context:prompt_text("Build Command:", "build_command", {
+    default = "dotnet publish -c Release -o /app/publish",
+    help    = "Built inside the builder image, from the repo root. Must publish to /app/publish.",
+})
+
+context:prompt_text("Runtime Artifact:", "runtime_artifact", {
+    default = context:get("ProjectName") .. ".dll",
+    help    = "Assembly in the publish output that the container should run.",
+})
+
 -- Platform resources. These drive the platform manifests' resourceRequirements ONLY —
 -- the platform provisions them and injects connection secrets. No connection code is
 -- woven: that is project code, and this overlay never touches project code.
