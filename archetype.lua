@@ -63,10 +63,18 @@ context:prompt_text("Build Command:", "build_command", {
     help    = "Built inside the builder image, from the repo root. Must publish to /app/publish.",
 })
 
+-- Asked OPTIONAL and derived after: a default computed from the application name cannot be
+-- known until that prompt is answered, so an interface probe resolves it against a
+-- placeholder and ships that to every client. The help states the derivation.
 context:prompt_text("Runtime Artifact:", "runtime_artifact", {
-    default = context:get("ProjectName") .. ".dll",
-    help    = "Assembly in the publish output that the container should run.",
+    optional    = true,
+    placeholder = "BillingService.dll",
+    help        = "Assembly in the publish output that the container should run. Leave blank to "
+        .. "use {ProjectName}.dll.",
 })
+if context:get("runtime_artifact") == nil or context:get("runtime_artifact") == "" then
+    context:set("runtime_artifact", context:get("ProjectName") .. ".dll")
+end
 
 -- Platform resources. These drive the platform manifests' resourceRequirements ONLY —
 -- the platform provisions them and injects connection secrets. No connection code is
