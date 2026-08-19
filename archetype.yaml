@@ -5,7 +5,7 @@ frameworks: ["ASP.NET Core"]
 tags: ["overlay", "empty", "retrofit", "ci", "platform", "dotnet"]
 
 requires:
-  archetect: "3.0.0"
+  archetect: "3.4.3"
 
 templating:
   trim_blocks: true
