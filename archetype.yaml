@@ -1,4 +1,4 @@
-description: ".NET Service Platform Overlay"
+description: ".NET Retrofit Overlay"
 authors: ["Jimmie Fulton <jimmie@ybor.ai>"]
 languages: ["CSharp"]
 frameworks: ["ASP.NET Core"]

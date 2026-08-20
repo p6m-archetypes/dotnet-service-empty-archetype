@@ -1,6 +1,6 @@
 # dotnet-service-empty-archetype
 
-.NET **Service Platform Overlay** — generates only the platform *servicing layer* for a
+.NET **Retrofit Overlay** — generates only the platform *servicing layer* for a
 service and nothing else. Run it against an **existing** .NET project to retrofit it with:
 
 - `.github/workflows/` — CI build + cut-tag (`dotnet-ci`)
